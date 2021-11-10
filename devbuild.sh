@@ -118,13 +118,10 @@ cd ${BUILD_DIR}
 cmake .. -DCMAKE_INSTALL_PREFIX=..
 make -j ${BUILD_JOBS:-4}
 
-export ENKF_TYPE=FV3reg
 cd ${MYDIR}/src/gsi
-./ush/build.comgsi ${KJET}
+./ush/build.comgsi ${KJET} fv3enkf
 cp ${MYDIR}/src/gsi/build/bin/gsi.x ${MYDIR}/bin/gsi.x
-if [ ${ENKF_TYPE} == "FV3reg" ]; then
-  cp ${MYDIR}/src/gsi/build/bin/enkf_fv3reg.x ${MYDIR}/bin/enkf_fv3reg.x
-fi
+cp ${MYDIR}/src/gsi/build/bin/enkf_fv3reg.x ${MYDIR}/bin/enkf_fv3reg.x
 
 . ${MYDIR}/${ENV_FILE}_DA
 cd ${MYDIR}/src/rrfs_utl
