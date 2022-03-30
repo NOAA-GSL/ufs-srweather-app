@@ -86,15 +86,49 @@ Building need be done only once if no source code is changed.
 ```
 - You can also use devbuild.sh to build all the code including data assimilation components (from top level SRW App).
 ```
-  devbuild.sh        (show this help)
-  devbuild.sh intel  (build GSI using Intel compiler)
-  devbuild.sh gnu    (build GSI using GNU compiler)
-  devbuild.sh kjet   (build GSI using Intel compiler and kjet specfici optimization)
-            ** kjet option should be used by real time deployment on Jet**
-  devbuild.sh help   (show this help)
+Usage: ./devbuild.sh [OPTIONS]...
+
+OPTIONS
+  -h, --help
+      show this help guide
+  --platform=PLATFORM
+      name of machine you are building on
+      (e.g. cheyenne | hera | jet | orion | wcoss_dell_p3)
+  --compiler=COMPILER
+      compiler to use; default depends on platform
+      (e.g. intel | gnu | cray | gccgfortran)
+  --app=APPLICATION
+      weather model application to build
+      (e.g. ATM | ATMW | S2S | S2SW)
+  --ccpp="CCPP_SUITE1,CCPP_SUITE2..."
+      CCCP suites to include in build; delimited with ','
+  --enable-options="OPTION1,OPTION2,..."
+      enable ufs-weather-model options; delimited with ','
+      (e.g. 32BIT | INLINE_POST | UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
+  --disable-options="OPTION1,OPTION2,..."
+      disable ufs-weather-model options; delimited with ','
+      (e.g. 32BIT | INLINE_POST | UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
+  --continue
+      continue with existing build
+  --clean
+      removes existing build; overrides --continue
+  --build-dir=BUILD_DIR
+      build directory
+  --install-dir=INSTALL_DIR
+      installation prefix
+  --build-type=BUILD_TYPE
+      build type; defaults to RELEASE
+      (e.g. DEBUG | RELEASE | RELWITHDEBINFO)
+  --build-jobs=BUILD_JOBS
+      number of build jobs; defaults to 4
+  -v, --verbose
+      build with verbose output
+
+NOTE: This script is for internal developer use only;
+See User's Guide for detailed build instructions
 ```
-The build script will automatically determine current HPC platform.     
-Don't use the 'kjet' optin if you will run GSI on other jet (such as xjet,etc) or you are NOT on Jet    
+The build script will automatically determine current HPC platform if not specified.
+The build script will also automatically choose a default compiler if not specified.
 
 ### Configuring
 
