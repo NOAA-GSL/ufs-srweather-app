@@ -176,7 +176,7 @@ make VERBOSE=1 -j 8 > & build.out
 make install
 ```
 
-NOTE: If you used a GSI installed via the App, then "/path/to/gsi" is the path of your ufs-srweather-app directory that contains its `bin/`, `lib/`, and `include/` directories.  Otherwise, it is the path where you cloned your stand-alone GSI.
+NOTE: If you used a GSI installed via the App, then "/path/to/gsi" is the path of your ufs-srweather-app directory that contains its `bin/`, `lib/`, and `include/` directories.  Otherwise, it is the path where you installed your stand-alone GSI.
 
 ### Configuring
 
