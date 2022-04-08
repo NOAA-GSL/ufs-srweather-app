@@ -130,6 +130,54 @@ See User's Guide for detailed build instructions
 The build script will automatically determine current HPC platform if not specified.
 The build script will also automatically choose a default compiler if not specified.
 
+### Stand-alone builds for GSI
+
+To build the regional GSI outside the App context you must clone GSI and use GSI's native CMake build system.
+
+However, you do still need to use the App's build environment.  So, make sure to source the appropriate build environment from the App first:
+
+```
+cd /path/to/ufs-srweather-app
+module use env
+source env/build_<platform>_<compiler>.env
+```
+
+Then, follow these steps:
+
+```
+git clone -b feature/cmake-refactor https://github.com/NOAA-GSL/GSI.git gsi
+cd gsi
+mkdir build ; cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=.. -DGSI_MODE=Regional -DENKF_MODE=FV3REG
+make VERBOSE=1 -j 8 > & build.out
+make install
+```
+
+### Stand-alone builds for rrfs_utl
+
+To build the rrfs_utl outside the App context, you must already have a GSI installation compiled and installed.  You can use either a stand-alone GSI installation, or a GSI installed via the App's build system.
+
+As with GSI, the rrfs_utl stand-alone build still relies on the use of the App's build environment.  So, make sure to source the appropriate build environment from the App first:
+
+```
+cd /path/to/ufs-srweather-app
+module use env
+source env/build_<platform>_<compiler>.env
+```
+
+Then, once you have GSI installed, and the App environmwent loaded, follow these steps:
+
+```
+git clone https://github.com/christopherwharrop-noaa/rrfs_utl.git
+cd rrfs_utl
+mkdir build ; cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=.. -Dncdiag_ROOT=/path/to/gsi -Dgsi_ROOT=/path/to/gsi
+make VERBOSE=1 -j 8 > & build.out
+make install
+```
+
+NOTE: If you used a GSI installed via the App, then "/path/to/gsi" is the path of your ufs-srweather-app directory that contains its `bin/`, `lib/`, and `include/` directories.  Otherwise, it is the path where you cloned your stand-alone GSI.
+
 ### Configuring
 
 The configuring steps below should be run when any of these files need
