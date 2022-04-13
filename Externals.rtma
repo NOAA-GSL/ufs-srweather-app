@@ -4,7 +4,7 @@ protocol = git
 repo_url = https://github.com/NOAA-GSL/regional_workflow
 # Specify either a branch name or a hash but not both.
 #branch = 3DRTMA
-hash = 79d2f9c1
+hash = 9a198b66
 local_path = regional_workflow
 required = True
 
