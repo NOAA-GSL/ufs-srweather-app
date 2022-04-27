@@ -3,7 +3,7 @@ name: Build SRWA
 
 on:
   push:
-    branches: [ rrfs_ci, feature/Build_SRWA_github_actions_workflow ]
+    branches: [ rrfs_ci, feature/CI_build_test ]
   pull_request:
     branches: [ rrfs_ci ]
 
@@ -21,7 +21,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          ref: feature/Build_SRWA_github_actions_workflow
+          ref: feature/CI_build_test
   
   Configure_SRWA:
     name: Update Scripts 
@@ -45,4 +45,3 @@ jobs:
           cd test/
           ./build.sh >& build_test.out
           cat build_test*
-          
