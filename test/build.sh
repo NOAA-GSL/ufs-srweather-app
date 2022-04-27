@@ -21,7 +21,7 @@ function usage() {
   exit 1
 }
 
-machines=( hera jet cheyenne orion wcoss_cray wcoss_dell_p3 )
+machines=( hera jet cheyenne orion wcoss_cray wcoss_dell_p3 aws )
 
 [[ $# -eq 1 ]] && usage
 
