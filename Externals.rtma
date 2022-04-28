@@ -31,7 +31,7 @@ protocol = git
 repo_url = https://github.com/NOAA-GSL/UPP
 # Specify either a branch name or a hash but not both.
 #branch = RRFS_dev
-hash = 8cae2a3e
+hash = cdd328d
 local_path = src/EMC_post
 required = True
 
