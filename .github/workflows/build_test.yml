@@ -2,10 +2,9 @@
 name: Build SRWA
 
 on:
-  push:
-    branches: [ rrfs_ci, feature/CI_build_test ]
   pull_request:
-    branches: [ rrfs_ci ]
+    types: 
+      - opened 
 
 # Use a default login shell which loads intel/oneapi/setvars.sh, and lmod path 
 defaults:

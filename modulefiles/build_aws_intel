@@ -1,0 +1,63 @@
+#%Module
+
+proc ModulesHelp { } {
+   puts stderr "This module loads libraries for building SRW on"
+   puts stderr "AWS ParallelCluster using Intel oneAPI -2021.5.0"
+}
+
+module-whatis "Loads libraries needed for building SRW on AWS ParallelCluster"
+
+# Dependant on the install location of hpc-stack modulefiles
+module use /scratch1/hpc-stack/modulefiles/stack
+
+module load hpc/1.2.0
+module load hpc-intel/2021
+# IntelOne API MPI (below)
+# module load hpc-impi/2021 
+# PCluster native intel mpi (version specified when hpc-stack is built)
+module load hpc-impi/2019.8.254 
+module load intelmpi
+module load cmake/3.20.1
+
+module load jasper/2.0.25
+module load zlib/1.2.11
+module load libpng/1.6.35
+
+module load hdf5/1.10.6
+module load netcdf/4.7.4
+module load pio/2.5.2
+module load esmf/8.2.0
+module load fms/2021.03
+
+module load bacio/2.4.1
+module load crtm/2.3.0
+module load g2/3.4.3
+module load g2tmpl/1.10.0
+module load ip/3.3.3
+module load sp/2.3.3
+module load w3nco/2.4.1
+module load upp/10.0.10
+
+module load gftl-shared/v1.3.3
+module load yafyaml/v0.5.1
+module load mapl/2.11.0-esmf-8.2.0
+
+module load gfsio/1.4.1
+module load landsfcutil/2.4.1
+module load nemsio/2.5.2
+module load nemsiogfs/2.5.3
+module load sfcio/1.4.1
+module load sigio/2.3.2
+module load w3emc/2.9.2
+module load wgrib2/2.0.8
+
+module load intelmpi
+module load libfabric-aws
+
+setenv CMAKE_C_COMPILER mpiicc
+setenv CMAKE_CXX_COMPILER mpiicpc
+setenv CMAKE_Fortran_COMPILER mpiifort
+setenv CMAKE_Platform linux.intel
+
+setenv I_MPI_ROOT /opt/intel/compilers_and_libraries_2020.2.254/linux/mpi
+setenv I_MPI_Platform shm:ofa

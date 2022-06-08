@@ -1,0 +1,19 @@
+#%Module
+
+proc ModulesHelp { } {
+   put stderr "This module loads python environement for running SRW on"
+   put stderr "AWS ParallelCluster"
+}
+
+module-whatis "Loads libraries needed for running SRW on AWS ParallelCluster"
+
+module load rocoto/develop
+
+module use -a /home/ubuntu/miniconda3/contrib_miniconda3/modulefiles
+module load miniconda3
+
+if { [module-info mode load] } {
+  puts stderr "Please do the following to activate conda:
+       > conda activate regional_workflow"
+}
+
