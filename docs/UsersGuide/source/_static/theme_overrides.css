@@ -7,9 +7,20 @@
       white-space: normal !important;
    }
 
+<<<<<<< HEAD
    .wy-table-responsive {
       overflow: visible !important;
    }
    
 }
 
+=======
+   /* .wy-table-responsive { */
+   /*   overflow: visible !important; */
+   /* } */
+   
+}
+
+
+
+>>>>>>> gsl/rrfs_ci
