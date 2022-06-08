@@ -1,3 +1,4 @@
 [submodule "hpc-stack-mod"]
 	path = hpc-stack-mod
 	url = https://github.com/NOAA-EMC/hpc-stack.git
+    
