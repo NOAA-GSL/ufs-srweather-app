@@ -2,6 +2,7 @@
 name: Build SRWA
 
 on:
+  push:
   pull_request:
     types: 
       - opened 
@@ -42,5 +43,5 @@ jobs:
         run: |
           ./manage_externals/checkout_externals
           cd test/
-          ./build.sh >& build_test.out
+          ./build.sh aws >& build_test.out
           cat build_test*

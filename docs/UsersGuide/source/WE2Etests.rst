@@ -386,18 +386,3 @@ Note the following:
   one or more alternate test names are listed, then ``run_WE2E_tests.sh`` will exit 
   with a warning message without running any tests.
 
-* A primary test can have more than one alternate test name (by having more than 
-  one symlink point to the test's configuration file).
-* The symlinks representing the alternate test names can be in the same or a 
-  different category directory.
-* To determine whether a test has one or more alternate names, a user can 
-  view the CSV file ``WE2E_test_info.csv`` that ``run_WE2E_tests.sh`` generates.  
-  Recall from :numref:`Section %s <WE2ETestInfoFile>` that column 1 of this CSV 
-  file contains the test's primary name (and its category) while column 2 contains 
-  any alternate names (and their categories).
-* With this primary/alternate test naming convention, a user can list either the 
-  primary test name or one of the alternate test names in the experiments list file 
-  (e.g. ``my_tests.txt``) that ``run_WE2E_tests.sh`` reads in.  If both primary and 
-  one or more alternate test names are listed, then ``run_WE2E_tests.sh`` will exit 
-  with a warning message without running any tests.
-
