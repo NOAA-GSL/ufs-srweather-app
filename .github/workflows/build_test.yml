@@ -21,7 +21,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          ref: feature/CI_build_test
+          ref: ${{ github.ref }}
   
   Build_SRWA:
     name: Build SRWA 
