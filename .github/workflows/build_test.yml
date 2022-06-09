@@ -2,11 +2,9 @@
 name: Build SRWA
 
 on:
-  push:
-    branches: rrfs_ci
+  workflow_dispatch:
   pull_request:
-    types: 
-      - opened 
+    types: [ labeled ]
 
 # Use a default login shell which loads intel/oneapi/setvars.sh, and lmod path 
 defaults:
@@ -17,6 +15,7 @@ jobs:
 
   Clone_SRWA:
     name: Clone Repo
+    if: ${{ github.event.label.name == 'ci-aws-intel-build' }}
     runs-on: self-hosted 
     steps:
       - name: Checkout Repository
@@ -26,6 +25,7 @@ jobs:
   
   Build_SRWA:
     name: Build SRWA 
+    if: ${{ github.event.label.name == 'ci-aws-intel-build' }}
     runs-on: self-hosted
     needs: Clone_SRWA
 
