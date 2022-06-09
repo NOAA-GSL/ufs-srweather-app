@@ -20,8 +20,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.base_ref }}
+
+      - name: Verify Branch 
+        run: |
+          git branch 
   
   Build_SRWA:
     name: Build SRWA 
