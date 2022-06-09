@@ -23,20 +23,10 @@ jobs:
         with:
           ref: feature/CI_build_test
   
-  Configure_SRWA:
-    name: Update Scripts 
-    runs-on: self-hosted 
-    needs: [ Clone_SRWA ]
-    
-    steps:
-      - name: Update scripts 
-        run: |
-          sed -i "99i  \  `hostname -f`)     MACHINE_ID=aws ;;   ### pcluster" env/detect_machine.sh
-  
   Build_SRWA:
     name: Build SRWA 
     runs-on: self-hosted
-    needs: [ Clone_SRWA, Configure_SRWA ]
+    needs: Clone_SRWA
     
     steps:
       - name: Build Short Range Weather App using test/build.sh
