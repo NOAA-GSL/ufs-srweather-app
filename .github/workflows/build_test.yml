@@ -4,7 +4,10 @@ name: Build SRWA
 on:
   workflow_dispatch:
   pull_request:
-    types: [ labeled ]
+    branches: 
+      - rrfs_ci 
+    types: 
+      - labeled 
 
 # Use a default login shell which loads intel/oneapi/setvars.sh, and lmod path 
 defaults:
@@ -23,7 +26,7 @@ jobs:
 
       - name: Verify Branch 
         run: |
-          git branch 
+          git branch -a
   
   Build_SRWA:
     name: Build SRWA 
