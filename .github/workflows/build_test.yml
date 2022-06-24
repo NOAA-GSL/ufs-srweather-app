@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          path: ufs-srweather-app-${{ github.run_id }}
 
       - name: Verify Branch 
         run: |
@@ -37,7 +39,25 @@ jobs:
     steps:
       - name: Build Short Range Weather App using test/build.sh
         run: |
+          cd ufs-srweather-app-${{ github.run_id }}
           ./manage_externals/checkout_externals
           cd test/
-          ./build.sh aws >& build_test.out
-          cat build_test*
+          ./build.sh aws 2>&1 | tee build_test.out
+
+  Build_Status:
+    name: Check Build Sucess or Failure 
+    runs-on: self-hosted 
+    if: ${{ github.event.label.name == 'ci-aws-intel-build' }}
+    needs: [ Clone_SRWA, Build_SRWA ]
+    
+    steps:
+      - name: Get build status
+        run: |
+          cd ufs-srweather-app-${{ github.run_id }}/test/
+          status=`tail -1 build_test.out |cut -d ' ' -f 3-`
+          if [ $status == PASS ]; then
+            exit 0
+          else 
+            exit 1
+          fi
+
