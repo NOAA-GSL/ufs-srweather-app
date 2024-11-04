@@ -104,7 +104,7 @@ metatask_run_ensemble:
     <<: *default_task
     command: 
       cyclestr:
-        value: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE }} && &SCRIPTSdir;/chgres_cube.py
+        value: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE }} ; &SCRIPTSdir;/chgres_cube.py
           -c &GLOBAL_VAR_DEFNS_FP;
           --cycle @Y-@m-@dT@H:@M:@S
           --key-path task_make_ics
@@ -155,7 +155,7 @@ metatask_run_ensemble:
     <<: *default_task
     command: 
       cyclestr:
-        value: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE }} && &SCRIPTSdir;/chgres_cube.py
+        value: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE }} ; &SCRIPTSdir;/chgres_cube.py
           -c &GLOBAL_VAR_DEFNS_FP;
           --cycle @Y-@m-@dT@H:@M:@S
           --key-path task_make_lbcs

@@ -29,6 +29,40 @@ def _deliver_files(config, dst_dir, key_path, src_dir):
         sys.exit(1)
 
 
+def _get_external_fns(config, cycle, key_path):
+    """
+    Return external model file names and forecast hours for the given task in the experiment.
+
+    They come from the metadata file written by the prior data retrival task.
+    """
+    config_cp = get_yaml_config(deepcopy(config.data))
+    config_cp.dereference(
+        context={
+            **config_cp,
+            **os.environ,
+            "cycle": cycle,
+        }
+    )
+    varsfilepath = _walk_key_path(config_cp, key_path)["input_files_metadata_path"]
+    external_config = get_yaml_config(varsfilepath)
+    external_config_fns = external_config["external_model_fns"]
+    external_config_fhrs = external_config["external_model_fhrs"]
+    return external_config_fhrs, external_config_fns
+
+
+def _is_grib2(config, key_path):
+    """
+    Is the input in grib2 format?
+    """
+    return (
+        _walk_key_path(
+            config,
+            key_path + ["chgres_cube", "namelist", "update_values", "config"],
+        ).get("input_type")
+        == "grib2"
+    )
+
+
 def _walk_key_path(config, key_path):
     """
     Navigate to the sub-config at the end of the path of given keys.
@@ -55,7 +89,7 @@ def parse_args(argv):
     Parse arguments for the script.
     """
     parser = ArgumentParser(
-        description="Script that runs chgres_cube via uwtools API",
+        description="Script that runs chgres_cube via uwtools API for SRW",
     )
     parser.add_argument(
         "-c",
@@ -67,13 +101,13 @@ def parse_args(argv):
     )
     parser.add_argument(
         "--cycle",
-        help="The cycle in ISO8601 format (e.g. 2024-07-15T18)",
+        help="The cycle in ISO8601 format (e.g. 2024-07-15T18).",
         required=True,
         type=dt.datetime.fromisoformat,
     )
     parser.add_argument(
         "--key-path",
-        help="Dot-separated path of keys leading through the config to the driver's YAML block",
+        help="Dot-separated path of keys leading through the config to the driver's YAML block.",
         metavar="KEY[.KEY...]",
         required=True,
         type=lambda s: s.split("."),
@@ -86,104 +120,67 @@ def parse_args(argv):
     return parser.parse_args(argv)
 
 
-# pylint: disable-next=too-many-locals, too-many-statements
 def run_chgres_cube(config_file, cycle, key_path, member):
     """
-    Setup and run the chgres_cube Driver.
+    Setup and run the chgres_cube UW Driver.
     """
     expt_config = get_yaml_config(config_file)
 
-    # The experiment config will have {{ CRES | env }} expressions in it that need to be
+    # The experiment config will have {{ 'CRES' | env }} expressions in it that need to be
     # dereferenced during driver initialization.
     os.environ["CRES"] = expt_config["workflow"]["CRES"]
     os.environ["MEMBER"] = member
 
-    # Render names of external model files in experiment config.
-    expt_config.dereference(
-        context={
-            **expt_config,
-            **os.environ,
-            "cycle": cycle,
-        }
-    )
-    task_config = _walk_key_path(expt_config, key_path)
-    grib2_input = (
-        _walk_key_path(
-            task_config, ["chgres_cube", "namelist", "update_values", "config"]
-        ).get("input_type")
-        == "grib2"
-    )
-
-    varsfilepath = task_config["input_files_metadata_path"]
-    external_config = get_yaml_config(varsfilepath)
-    external_config_fns = external_config["external_model_fns"]
-    external_config_fhrs = external_config["external_model_fhrs"]
-
+    ext_fhrs, ext_fns = _get_external_fns(expt_config, cycle, key_path)
+    grib2_input = _is_grib2(expt_config, key_path)
     if "task_make_ics" in key_path:
         if grib2_input:
-            os.environ["fn_grib2"] = external_config_fns[0]
+            os.environ["fn_grib2"] = ext_fns[0]
         else:
-            os.environ["fn_atm"] = external_config_fns[0]
-            os.environ["fn_sfc"] = external_config_fns[1]
+            os.environ["fn_atm"] = ext_fns[0]
+            os.environ["fn_sfc"] = ext_fns[1]
 
-        chgres_cube_driver = ChgresCube(
-            config=config_file,
-            cycle=cycle,
-            key_path=key_path,
-            leadtime=dt.timedelta(hours=0),
+        driver = run_driver(
+            ChgresCube, config_file, cycle, key_path, leadtime=dt.timedelta(hours=0)
         )
-        rundir = Path(chgres_cube_driver.config["rundir"])
-        logging.info(f"Will run in {rundir}")
-        chgres_cube_driver.run()
-
-        if not (rundir / "runscript.chgres_cube.done").is_file():
-            logging.error(
-                "Error occurred running chgres_cube. See component error logs."
-            )
-            sys.exit(1)
+        rundir = Path(driver.config["rundir"])
 
         # Deliver output data to the forecast's INPUT dir.
         delivery_dir = rundir.parent / "INPUT"
+        expt_config_cp = get_yaml_config(deepcopy(expt_config.data))
+        expt_config_cp.dereference(
+            context={
+                **expt_config_cp,
+                **os.environ,
+                "cycle": cycle,
+            }
+        )
         _deliver_files(
-            config=expt_config, dst_dir=delivery_dir, key_path=key_path, src_dir=rundir
+            config=expt_config_cp,
+            dst_dir=delivery_dir,
+            key_path=key_path,
+            src_dir=rundir,
         )
 
     else:  # Loop over make_lbcs tasks.
         # This loop will need a version of the config that is not dereferenced.
         expt_config = get_yaml_config(config_file)
-
-        fhrs_and_fns = list(zip(external_config_fhrs, external_config_fns))
-        for external_fhr, external_fn in fhrs_and_fns:
+        for external_fhr, external_fn in list(zip(ext_fhrs, ext_fns)):
             os.environ["fn_grib2" if grib2_input else "fn_atm"] = external_fn
 
+            # Determine lead time and run the driver
             lbc_offset_fhrs = _walk_key_path(
-                expt_config,
-                ["task_get_extrn_lbcs", "envvars", "EXTRN_MDL_LBCS_OFFSET_HRS"],
+                expt_config, ["task_get_extrn_lbcs", "envvars"]
+            )["EXTRN_MDL_LBCS_OFFSET_HRS"]
+            leadtime = dt.timedelta(hours=int(external_fhr) - int(lbc_offset_fhrs))
+            driver = run_driver(
+                ChgresCube, config_file, cycle, key_path, leadtime=leadtime
             )
-            fcst_hr_lam = int(external_fhr) - int(lbc_offset_fhrs)
-            leadtime = dt.timedelta(hours=fcst_hr_lam)
-
-            chgres_cube_driver = ChgresCube(
-                config=config_file,
-                cycle=cycle,
-                key_path=key_path,
-                leadtime=leadtime,
-            )
-            rundir = Path(chgres_cube_driver.config["rundir"])
-            logging.info(f"Will run in {rundir}")
-            chgres_cube_driver.run()
-
-            if not (rundir / "runscript.chgres_cube.done").is_file():
-                logging.error(
-                    "Error occurred running chgres_cube. See component error logs."
-                )
-                sys.exit(1)
+            rundir = Path(driver.config["rundir"])
 
             # Use a copy of the original here to avoid opening the file every time.
             expt_config_cp = get_yaml_config(deepcopy(expt_config.data))
 
-            # Output files should contain cycle information relative to the start time of the
-            # forecast -- use cycle = cycle.
             # This dereferencing must be inside loop bc the fcst hour is set differently each time.
             expt_config_cp.dereference(
                 context={
@@ -201,6 +198,30 @@ def run_chgres_cube(config_file, cycle, key_path, member):
                 key_path=key_path,
                 src_dir=rundir,
             )
+
+
+def run_driver(driver_obj, config_file, cycle, key_path, leadtime):
+    """
+    Initialize and run the provided UW driver.
+
+    Return the configured object.
+    """
+    driver = driver_obj(
+        config=config_file,
+        cycle=cycle,
+        key_path=key_path,
+        leadtime=leadtime,
+    )
+    rundir = Path(driver.config["rundir"])
+    logging.info(f"Will run {driver.driver_name()} in {rundir}")
+    driver.run()
+
+    if not (rundir / f"runscript.{driver.driver_name()}.done").is_file():
+        logging.error(
+            f"Error occurred running {driver.driver_name()}. Please see component error logs."
+        )
+        sys.exit(1)
+    return driver
 
 
 if __name__ == "__main__":
