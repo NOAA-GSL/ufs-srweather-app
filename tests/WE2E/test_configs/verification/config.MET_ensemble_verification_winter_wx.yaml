@@ -33,7 +33,10 @@ task_get_extrn_lbcs:
     FV3GFS_FILE_FMT_LBCS: netcdf
     LBC_SPEC_INTVL_HRS: 3
 task_run_fcst:
-  walltime: 01:00:00
+  fv3:
+    execution:
+      batchargs:
+        walltime: 01:00:00
 
 global:
   DO_ENSEMBLE: true

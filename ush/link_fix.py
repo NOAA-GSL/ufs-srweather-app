@@ -413,7 +413,7 @@ if __name__ == "__main__":
         target_dir=cfg["workflow"]["FIXlam"],
         ccpp_phys_suite=cfg["workflow"]["CCPP_PHYS_SUITE"],
         constants=cfg["constants"],
-        dot_or_uscore=cfg["workflow"]["DOT_OR_USCORE"],
+        dot_or_uscore="_",
         nhw=cfg["grid_params"]["NHW"],
         run_task=True,
         sfc_climo_fields=cfg["fixed_files"]["SFC_CLIMO_FIELDS"],

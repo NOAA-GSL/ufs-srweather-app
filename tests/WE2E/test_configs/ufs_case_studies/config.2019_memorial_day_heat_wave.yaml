@@ -37,7 +37,7 @@ task_make_lbcs:
       batchargs:
         walltime: 06:00:00
 task_run_fcst:
-  chgres_cube:
+  fv3:
     execution:
       batchargs:
         walltime: 06:00:00

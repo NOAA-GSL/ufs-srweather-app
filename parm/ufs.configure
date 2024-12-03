@@ -30,6 +30,7 @@ AQM_petlist_bounds:             0 {{ aqm_pe_member01_m1 }}
 AQM_attributes::
   Verbosity = 0
   Diagnostic = 0
+  ResourceFile = aqm.yaml
 ::
 
 # Run Sequence #

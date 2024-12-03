@@ -43,11 +43,13 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 3
     USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
-  DT_ATMOS: 100
+  fv3:
+    model_configure:
+      update_values:
+        dt_atmos: 100
   LAYOUT_X: 6
   LAYOUT_Y: 6
   BLOCKSIZE: 26
-  QUILTING: true
   WRTCMP_write_groups: 1
   WRTCMP_write_tasks_per_group: 6
   WRTCMP_output_grid: rotated_latlon

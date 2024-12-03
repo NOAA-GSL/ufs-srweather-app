@@ -24,4 +24,7 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 3
     FV3GFS_FILE_FMT_LBCS: netcdf
 task_run_fcst:
-  DT_ATMOS: 60
+  fv3:
+    model_configure:
+      update_values:
+        dt_atmos: 60

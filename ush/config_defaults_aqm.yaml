@@ -10,6 +10,50 @@ task_run_post:
   output_file_labels:
     - cmaq
 
+task_run_fcst:
+  aqm:
+    control_file:
+      template_file: "{{ workflow.PARMdir }}/aqm.rc"
+      template_values:
+        do_aqm_dust: true
+        do_aqm_canopy: false
+        do_aqm_product: true
+        ccpp_phys_suite: "{{ workflow.CCPP_PHYS_SUITE }}"
+        init_concentrations: true
+        aqm_rc_bio_file_fp: "{{ platform.FIXaqm }}/bio/BEIS_SARC401.ncf"
+        fixaqm: "{{ platform.FIXaqm }}"
+        aqm_rc_fire_file_fp: "{{ 'COMIN' | env }}/GBBEPx_C401GRID.emissions_v003_{{ timevars.yyyymmdd }}_t{{ timevars.hh }}z.nc"
+        aqm_rc_fire_frequency: static
+        aqm_rc_dust_file_fp: "{{ platform.FIXaqm }}/dust/FENGSHA_p8_10km_inputs_{{ workflow.PREDEF_GRID_NAME }}.nc"
+        aqm_rc_canopy_file_fp: "{{ platform.FIXaqm }}/canopy/gfs.t12z.geo.{{ cdate.strftime('%m') }}.canopy_regrid.nc"
+        aqm_rc_product_fn: aqm.prod.rc
+        aqm_rc_product_frequency: hourly
+  fv3:
+    namelist:
+      update_values:
+        fv_core_nml:
+          k_split: 1
+          n_split: 8
+        gfs_physics_nml:
+          cplaqm: true
+          cplocn2atm: false
+          fscav_aero: ["aacd:0.0", "acet:0.0", "acrolein:0.0", "acro_primary:0.0", "ald2:0.0",
+                  "ald2_primary:0.0", "aldx:0.0", "benzene:0.0", "butadiene13:0.0", "cat1:0.0",
+                  "cl2:0.0", "clno2:0.0", "co:0.0", "cres:0.0", "cron:0.0",
+                  "ech4:0.0", "epox:0.0", "eth:0.0", "etha:0.0", "ethy:0.0",
+                  "etoh:0.0", "facd:0.0", "fmcl:0.0", "form:0.0", "form_primary:0.0",
+                  "gly:0.0", "glyd:0.0", "h2o2:0.0", "hcl:0.0", "hg:0.0",
+                  "hgiigas:0.0", "hno3:0.0", "hocl:0.0", "hono:0.0", "hpld:0.0",
+                  "intr:0.0", "iole:0.0", "isop:0.0", "ispd:0.0", "ispx:0.0",
+                  "ket:0.0", "meoh:0.0", "mepx:0.0", "mgly:0.0", "n2o5:0.0",
+                  "naph:0.0", "no:0.0", "no2:0.0", "no3:0.0", "ntr1:0.0",
+                  "ntr2:0.0", "o3:0.0", "ole:0.0", "opan:0.0", "open:0.0",
+                  "opo3:0.0", "pacd:0.0", "pan:0.0", "panx:0.0", "par:0.0",
+                  "pcvoc:0.0", "pna:0.0", "prpa:0.0", "rooh:0.0", "sesq:0.0",
+                  "so2:0.0", "soaalk:0.0", "sulf:0.0", "terp:0.0", "tol:0.0",
+                  "tolu:0.0", "vivpo1:0.0", "vlvoo1:0.0", "vlvoo2:0.0", "vlvpo1:0.0",
+                  "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0",
+                  "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
 task_pre_post_stat:
   execution: &default_aqm_execution
     cores: 1

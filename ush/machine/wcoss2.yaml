@@ -54,7 +54,7 @@ rocoto:
       task_run_fcst_mem#mem#:
         cores: !remove
         native: '{{ platform.SCHED_NATIVE_CMD }}'
-        nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST }}'
+        nodes: '{{ task_run_fcst.fv3.execution.batchargs.nodes }}:ppn={{ task_run_fcst.fv3.execution.batchargs.tasks_per_node }}:tpp={{ task_run_fcst.fv3.execution.threads }}'
         nodesize: '{{ platform.NCORES_PER_NODE }}'
     metatask_nexus_emission:
       task_nexus_emission_#nspt#:

@@ -28,7 +28,7 @@ task_make_grid:
 
 task_make_orog:
   <<: *default_task
-  command: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE }} && &SCRIPTSdir;/make_orog.py
+  command: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE | lower }} && &SCRIPTSdir;/make_orog.py
     -c &GLOBAL_VAR_DEFNS_FP;
     --key-path task_make_orog'
   join:
@@ -52,7 +52,7 @@ task_make_orog:
 
 task_make_sfc_climo:
   <<: *default_task
-  command: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE }} && &SCRIPTSdir;/make_sfc_climo.py
+  command: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE | lower }} && &SCRIPTSdir;/make_sfc_climo.py
     -c &GLOBAL_VAR_DEFNS_FP;
     --key-path task_make_sfc_climo'
   join:

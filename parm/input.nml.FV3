@@ -197,15 +197,6 @@
     interp_method = 'conserve_great_circle'
 /
 
-&nam_sfcperts
-/
-
-&nam_sppperts
-/
-
-&nam_stochy
-/
-
 &namsfc
     fabsl = 99999
     faisl = 99999

@@ -30,4 +30,7 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 3
     USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
-  QUILTING: false
+  fv3:
+    model_configure:
+      update_values:
+        quilting: false

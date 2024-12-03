@@ -104,18 +104,11 @@ metatask_run_ensemble:
     <<: *default_task
     command: 
       cyclestr:
-        value: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE }} && &SCRIPTSdir;/chgres_cube.py
+        value: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE | lower }} && &SCRIPTSdir;/chgres_cube.py
           -c &GLOBAL_VAR_DEFNS_FP;
           --cycle @Y-@m-@dT@H:@M:@S
           --key-path task_make_ics
           --mem #mem#'
-    join:
-      cyclestr:
-        value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    envars:
-      <<: *default_vars
-      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-      nprocs: !int '{{ task_make_ics.chgres_cube.execution.batchargs.nodes * task_make_ics.chgres_cube.execution.batchargs.tasks_per_node }}'
     join:
       cyclestr:
         value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
@@ -155,7 +148,7 @@ metatask_run_ensemble:
     <<: *default_task
     command: 
       cyclestr:
-        value: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE }} && &SCRIPTSdir;/chgres_cube.py
+        value: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE | lower }} && &SCRIPTSdir;/chgres_cube.py
           -c &GLOBAL_VAR_DEFNS_FP;
           --cycle @Y-@m-@dT@H:@M:@S
           --key-path task_make_lbcs
@@ -183,18 +176,20 @@ metatask_run_ensemble:
 
   task_run_fcst_mem#mem#:
     <<: *default_task
-    command: '&LOAD_MODULES_RUN_TASK; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST"'
-    envars:
-      <<: *default_vars
-      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-      nprocs: !int '{{ task_run_fcst.PE_MEMBER01 }}'
+    command: 
+      cyclestr:
+        value: 'source &USHdir;/load_modules_wflow.sh {{ user.MACHINE | lower }} && &SCRIPTSdir;/run_fcst.py 
+          -c &GLOBAL_VAR_DEFNS_FP;
+          --cycle @Y-@m-@dT@H:@M:@S
+          --key-path task_run_fcst
+          --mem #mem#'
     join:
       cyclestr:
         value: '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    partition: '{{ "&PARTITION_FCST;" if platform.get("PARTITION_FCST") else "None" }}'
+    nodes: '{{ task_run_fcst.fv3.execution.batchargs.nodes // 1 }}:ppn={{ task_run_fcst.fv3.execution.batchargs.tasks_per_node // 1 }}'
+    partition: '{{ "&PARTITION_FCST;" if platform.get("PARTITION_FCST") }}'
     queue: '&QUEUE_FCST;'
-    nodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}:ppn={{ task_run_fcst.PPN_RUN_FCST // 1 }}'
-    walltime: '{{ task_run_fcst.walltime }}'
+    walltime: '{{ task_run_fcst.fv3.execution.batchargs.walltime }}'
     dependency:
       and:
         taskdep_make_ics:

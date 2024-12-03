@@ -29,7 +29,10 @@ task_get_extrn_lbcs:
     EXTRN_MDL_FILES_LBCS:
       - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 task_run_fcst:
-  DT_ATMOS: 75
+  fv3:
+    model_configure:
+      update_values:
+        dt_atmos: 75
   LAYOUT_X: 10
   LAYOUT_Y: 4
   BLOCKSIZE: 23

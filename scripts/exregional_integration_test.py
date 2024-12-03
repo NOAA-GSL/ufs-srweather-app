@@ -33,6 +33,8 @@ import sys
 import unittest
 from pathlib import Path
 
+from uwtools.api.config import get_yaml_config
+
 # --------------Define some functions ------------------#
 
 
@@ -86,9 +88,10 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--fcst_inc",
-        default="1",
+        default=1,
         help="Increment of forecast in hours.",
         required=False,
+        type=int,
     )
     parser.add_argument(
         "--debug",
@@ -111,12 +114,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Loop through model_configure file to find the netcdf base names
-    with open(MODEL_CONFIGURE_FP, "r", encoding="utf-8") as f:
-        for line in f:
-            if line.startswith("filename_base"):
-                filename_base_1 = line.split("'")[1]
-                filename_base_2 = line.split("'")[3]
-                break
+    model_configure = get_yaml_config(MODEL_CONFIGURE_FP)
+    filename_base_1, filename_base_2 = model_configure["filename_base"].split()
 
     # Create list of expected filenames from the experiment
     filename_list = []
@@ -127,6 +126,10 @@ if __name__ == "__main__":
         filename_2 = f"{filename_base_2}f{fhour}.nc"
         filename_list.append(filename_1)
         filename_list.append(filename_2)
+
+    if not filename_list:
+        logging.error("No files were found to test")
+        sys.exit(1)
 
     # Call unittest class
     TestExptFiles.fcst_dir = args.fcst_dir

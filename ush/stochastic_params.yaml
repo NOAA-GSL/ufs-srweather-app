@@ -1,0 +1,112 @@
+# This file is loaded in setup.py to create an appropriate namelist when flags are turned on in the
+# global section.
+#
+# For detailed documentation of these parameters, see:
+#   https://stochastic-physics.readthedocs.io/en/ufs_public_release/namelist_options.html
+#
+do_shum:
+  fv3:
+    namelist:
+      update_values:
+        gfs_physics_nml:
+          do_shum: true
+        nam_stochy:
+          iseed_shum: !int '{{ cdate.strftime("%Y%m%d%H")|int * 1000 * "MEM"|env|int * 10 + 2 }}'
+          new_lscale: true
+          shum: 0.006
+          shum_lscale: 150000
+          shum_tau: 21600
+          shumint: 3600
+do_skeb:
+  fv3:
+    namelist:
+      update_values:
+        gfs_physics_nml:
+          do_skeb: true
+        nam_stochy:
+          iseed_skeb: !int '{{ cdate.strftime("%Y%m%d%H")|int * 1000 * "MEM"|env|int * 10 + 3 }}'
+          new_lscale: true
+          skeb: 0.5
+          skeb_lscale: 150000
+          skebnorm: 1
+          skeb_tau: 21600
+          skebint: 3600
+          skeb_vdof: 10
+
+
+# LSM perturbations include SMC - soil moisture content (volume fraction),
+# VGF - vegetation fraction, ALB - albedo, SAL - salinity,
+# EMI - emissivity, ZOL - surface roughness (cm), and STC - soil temperature
+#
+# Only five perturbations at a time can be applied currently, but all seven
+# are shown below.  In addition, only one unique iseed value is allowed.
+# at the moment, and is used for each pattern.
+do_lsm_spp:
+  fv3:
+    namelist:
+      update_values:
+        gfs_physics_nml:
+          do_spp: true
+          n_var_lndp: 7
+          lndp_type: 2
+          fhcyc: 999
+        nam_stochy:
+          new_lscale: true
+        nam_sfcperts:
+          iseed_lndp:
+            - !int '{{ cdate.strftime("%Y%m%d%H")|int * 1000 * "MEM"|env|int * 10 + 9 }}'
+          lndp_type: 2
+          lndp_model_type: 2
+          lndp_tau: [ 21600, 21600, 21600, 21600, 21600, 21600, 21600 ]
+          lndp_lscale: [ 150000, 150000, 150000, 150000, 150000, 150000, 150000 ]
+          lndp_var_list: [ "smc", "vgf", "alb", "sal", "emi", "zol", "stc" ]
+          lndp_prt_list: [ 0.017, 0.001, 0.001, 0.001, 0.001, 0.001, 0.2 ]
+
+# SPP perturbs specific tuning parameters within a physics parameterization (unlike SPPT, which
+# multiplies overall physics tendencies by a random perturbation field *after* the call to the
+# physics suite). Patterns evolve and are applied at each time step. Each SPP option is an array,
+# applicable (in order) to the HRRR-based parameterization listed in spp_var_list.
+#
+# Note that SPP is currently only available for specific physics schemes used in the RAP/HRRR
+# physics suite. Users need to be aware of which suite definition file is chosen when turning this
+# option on.
+
+do_spp:
+  fv3:
+    namelist:
+      update_values:
+        gfs_physics_nml:
+          do_spp: true
+          n_var_spp: 5
+        nam_stochy:
+          new_lscale: true
+        nam_sppperts:
+          iseed_spp:
+            - !int '{{ cdate.strftime("%Y%m%d%H")|int * 1000 * "MEM"|env|int * 10 + 4 }}'
+            - !int '{{ cdate.strftime("%Y%m%d%H")|int * 1000 * "MEM"|env|int * 10 + 5 }}'
+            - !int '{{ cdate.strftime("%Y%m%d%H")|int * 1000 * "MEM"|env|int * 10 + 6 }}'
+            - !int '{{ cdate.strftime("%Y%m%d%H")|int * 1000 * "MEM"|env|int * 10 + 7 }}'
+            - !int '{{ cdate.strftime("%Y%m%d%H")|int * 1000 * "MEM"|env|int * 10 + 8 }}'
+          spp_lscale: [ 150000.0, 150000.0, 150000.0, 150000.0, 150000.0 ]
+          spp_prt_list: [ 0.2, 0.2, 0.75, 0.2, 0.2 ]
+          spp_sigtop1: [ 0.1, 0.1, 0.1, 0.1, 0.1 ]
+          spp_sigtop2: [ 0.025, 0.025, 0.025, 0.025, 0.025 ]
+          spp_stddev_cutoff: [ 1.5, 1.5, 2.5, 1.5, 1.5 ]
+          spp_tau: [ 21600.0, 21600.0, 21600.0, 21600.0, 21600.0 ]
+          spp_var_list: [ "pbl", "sfc", "mp", "rad", "gwd" ]
+do_sppt:
+  fv3:
+    namelist:
+      update_values:
+        gfs_physics_nml:
+          do_sppt: true
+        nam_stochy:
+          iseed_sppt: !int '{{ cdate.strftime("%Y%m%d%H")|int * 1000 * "MEM"|env|int * 10 + 1 }}'
+          new_lscale: true
+          sppt: 0.7
+          sppt_logit: true
+          sppt_lscale: 150000
+          sppt_sfclimit: true
+          sppt_tau: 21600
+          spptint: 3600
+          use_zmtnblck: false

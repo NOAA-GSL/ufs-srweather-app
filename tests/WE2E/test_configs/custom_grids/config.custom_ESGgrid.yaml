@@ -31,11 +31,13 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 3
     USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
-  DT_ATMOS: 40
+  fv3:
+    model_configure:
+      update_values:
+        dt_atmos: 40
   LAYOUT_X: 8
   LAYOUT_Y: 12
   BLOCKSIZE: 13
-  QUILTING: true
   WRTCMP_write_groups: 1
   WRTCMP_write_tasks_per_group: 12
   WRTCMP_output_grid: lambert_conformal

@@ -33,7 +33,10 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 3
     USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
-  walltime: 01:00:00
+  fv3:
+    execution:
+      batchargs:
+        walltime: 01:00:00
 global:
   DO_ENSEMBLE: true
   NUM_ENS_MEMBERS: 2

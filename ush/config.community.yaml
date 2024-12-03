@@ -30,6 +30,9 @@ task_get_extrn_lbcs:
     LBC_SPEC_INTVL_HRS: 6
     FV3GFS_FILE_FMT_LBCS: grib2
 task_run_fcst:
-  walltime: 02:00:00
+  fv3:
+    execution:
+      batchargs:
+        walltime: 02:00:00
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v16_CONUS_25km
